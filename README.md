@@ -9,32 +9,50 @@
 | 관리자 | `admin.html` | 비밀번호 로그인 → 대시보드 · 상태 변경 · 송장 입력 · 엑셀 다운로드/업로드 |
 | 사용법 | `guide.html` | 손님/농장용 사용 설명서 + 인스타·카톡 공유 문구 |
 
-주문 데이터는 **내 구글 시트**에 쌓여요. 서버비 0원이고, 시트를 직접 열어 고쳐도 돼요.
+주문 데이터는 **Supabase 무료 데이터베이스**에 쌓이고, 관리자 페이지에서 **엑셀로 다운로드**해요. 서버비 0원이에요.
 
 ---
 
-## 처음 한 번만 설정하기 (15분)
+## 처음 한 번만 설정하기 (Supabase, 10분)
 
-### 1. 구글 시트 + Apps Script
-1. [Google Sheets](https://sheets.new)에서 새 시트를 만들어요. (이름 예: `밍밍시 귤 주문`)
-2. 메뉴 **확장 프로그램 → Apps Script**를 열어요.
-3. `Code.gs`에 있던 내용을 지우고 이 저장소의 [`apps-script/Code.gs`](apps-script/Code.gs)를 통째로 붙여넣어요.
-4. 맨 위 `ADMIN_PASSWORD = 'change-me-please'`를 **나만 아는 비밀번호**로 바꿔요.
-5. 💾 저장한 뒤, 위쪽 함수 선택에서 `setup`을 고르고 **실행**해요. 권한 승인 창이 뜨면 허용해요.
-   (“확인되지 않은 앱” 화면 → 고급 → 이동 → 허용) → 시트에 `주문` 탭이 생겨요.
-6. 오른쪽 위 **배포 → 새 배포** → 톱니바퀴에서 **웹 앱** 선택
-   - 실행: **나**
-   - 액세스 권한: **모든 사용자**
-   - **배포** → 나오는 **웹 앱 URL**(`https://script.google.com/macros/s/.../exec`)을 복사해요.
+주문은 **Supabase**(무료 데이터베이스)에 저장되고, 관리자 페이지에서 **엑셀(.xlsx)로 다운로드**해요.
 
-### 2. `config.js` 수정
+### 1. Supabase 프로젝트 만들기
+1. [supabase.com](https://supabase.com) → **Start your project** → **Continue with GitHub**로 가입해요.
+2. **New project**를 눌러요.
+   - Name: `mingmandarin`
+   - Database Password: 아무거나 강하게 정해요. **Generate a password**를 눌러도 되고, 이 주문서에서는 쓰지 않아요.
+   - Region: **Northeast Asia (Seoul)**
+   - **Create new project** → 1~2분 기다려요.
+
+### 2. SQL 한 번 실행하기
+1. 왼쪽 메뉴 **SQL Editor** → **New query**를 눌러요.
+2. [`supabase/setup.sql`](supabase/setup.sql) 내용을 통째로 복사해서 붙여넣어요.
+3. 맨 아래 `'여기에-비밀번호'`를 **관리자 비밀번호**로 바꿔요. 따옴표는 그대로 두세요.
+4. 오른쪽 아래 **Run**을 누르면 → `Success. No rows returned`가 나오면 성공이에요.
+   (위험한 작업이라는 경고 창이 뜨면 **Run this query**를 눌러요.)
+
+### 3. 주소와 키 복사해서 `config.js`에 넣기
+1. 왼쪽 아래 ⚙️ **Project Settings → Data API**(또는 **API**) 에서 **Project URL**을 복사해요. 예: `https://abcd1234.supabase.co`
+2. **Project Settings → API Keys**에서 **Publishable key**(`sb_publishable_...`)를 복사해요. 예전 화면이면 `anon` `public` 키를 복사해요.
+   (⚠️ `secret` / `service_role` 키는 절대 쓰지 마세요.)
+3. `config.js`에 넣어요.
 ```js
-API_URL: "https://script.google.com/macros/s/....../exec",  // 방금 복사한 URL
+SUPABASE_URL: "https://abcd1234.supabase.co",
+SUPABASE_KEY: "sb_publishable_xxxxxxxx",
 ```
-상품, 가격, 계좌, 안내 문구, 문의 번호도 모두 `config.js`에서 바꿀 수 있어요.
+> 이 두 값은 공개돼도 괜찮아요. 주문 표는 직접 읽을 수 없고, 정해진 기능(주문하기·송장 조회·비밀번호가 필요한 관리자 기능)만 쓸 수 있게 막아두었어요.
 
-> ⚠️ 상품 **id나 가격을 바꾸면** `apps-script/Code.gs`의 `PRODUCTS`도 똑같이 바꾸고 **배포 → 배포 관리 → 수정(연필) → 새 버전 → 배포**를 해주세요. 주문 금액은 서버(Code.gs) 가격으로 계산돼요.
-> 품절 처리: `config.js` 상품에 `soldOut: true`, `Code.gs`의 `SOLD_OUT`에 id 추가.
+**가격을 바꾸려면** `config.js`의 가격과 Supabase **Table Editor → products** 표의 `price`를 같이 바꿔요. 주문 금액은 products 표 기준으로 계산돼요.
+**품절**은 products 표에서 `sold_out`을 체크하면 돼요.
+**관리자 비밀번호 변경**은 setup.sql 맨 아래 `insert into public.settings ...` 부분만 새 비밀번호로 다시 실행하면 돼요.
+
+> 무료 플랜은 **1주일 동안 아무 요청이 없으면 프로젝트가 일시정지**돼요. 판매 기간에는 상관없고, 멈췄다면 대시보드에서 **Restore**를 누르면 돼요.
+
+<details><summary>(선택) Supabase 대신 구글 시트를 쓰고 싶다면</summary>
+
+`apps-script/Code.gs`를 구글 시트의 Apps Script에 붙여넣고 웹 앱으로 배포한 뒤, URL을 `config.js`의 `API_URL`에 넣고 `SUPABASE_URL`은 비워두세요.
+</details>
 
 ### 3. 인터넷에 올리기
 아래 중 편한 방법 하나.
@@ -44,7 +62,7 @@ API_URL: "https://script.google.com/macros/s/....../exec",  // 방금 복사한 
 
 인스타 프로필 링크에 주문 주소를 걸면 끝! 특정 상품을 담은 채로 열고 싶으면 `?item=gift5`처럼 붙여요.
 
-> `API_URL`이 비어 있으면 **데모 모드**예요. 주문이 내 브라우저에만 저장되고, 관리자 비밀번호는 `1234`, 샘플 주문이 들어 있어요. 디자인을 미리 볼 때 쓰세요.
+> `SUPABASE_URL`이 비어 있으면 **데모 모드**예요. 주문이 내 브라우저에만 저장되고, 관리자 비밀번호는 `1234`, 샘플 주문이 들어 있어요. 디자인을 미리 볼 때 쓰세요.
 
 ---
 
@@ -74,16 +92,15 @@ assets/
   style.css         토스/애플 느낌 기본 스타일
   admin.css         관리자 화면 스타일
   pixel.js          픽셀 아트 (귤 따는 농부, 옮기는 일꾼, 택배 트럭, 굴러가는 귤, 귤 마스코트)
-  api.js            구글 시트 연동 + 데모 모드
+  api.js            Supabase 연동 (+ 구글 시트 / 데모 모드)
   order.js          주문자 페이지 동작
   admin.js          관리자 페이지 동작 (엑셀 다운로드/업로드 포함)
-apps-script/
-  Code.gs           구글 시트 백엔드 (붙여넣기용)
-  appsscript.json   Apps Script 설정 (서울 시간대)
+supabase/
+  setup.sql         데이터베이스 설정 (SQL Editor에 붙여넣기)
+apps-script/        (선택) 구글 시트 백엔드
 ```
 
 ## 개인정보 · 보안 메모
-- 주문 정보는 구글 시트에만 저장되고, 관리자 기능은 서버에서 비밀번호를 확인해요.
+- 주문 표는 외부에서 직접 읽을 수 없어요. 관리자 기능은 데이터베이스 안에서 비밀번호(암호화 저장)를 확인해요.
 - 송장 조회는 이름과 번호가 **둘 다** 맞아야 보이고, 받는 분 이름은 가려서(김*지) 보여줘요.
-- 비밀번호를 코드에 두기 싫으면 Apps Script **프로젝트 설정 → 스크립트 속성**에 `ADMIN_PASSWORD`를 추가하세요. (코드 값보다 우선)
-- 판매가 끝나면 시트의 개인정보는 정리해주세요.
+- 판매가 끝나면 엑셀로 백업한 뒤 Table Editor에서 orders 데이터를 정리해주세요.

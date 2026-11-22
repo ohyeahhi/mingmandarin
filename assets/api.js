@@ -1,7 +1,8 @@
-/* 밍밍시 주문서 API — 구글 Apps Script 연결 (API_URL 이 비어 있으면 데모 모드) */
+/* 밍밍시 주문서 API — Supabase (기본) / 구글 Apps Script (선택) / 데모 모드 (둘 다 비어 있을 때) */
 (function () {
   const C = window.MM_CONFIG;
-  const DEMO = !C.API_URL;
+  const MODE = C.SUPABASE_URL && C.SUPABASE_KEY ? 'supabase' : C.API_URL ? 'gas' : 'demo';
+  const DEMO = MODE === 'demo';
   const KEY = 'mm_demo_orders_v2';
 
   const digits = (s) => String(s || '').replace(/\D/g, '');
@@ -127,7 +128,42 @@
     throw new Error('알 수 없는 요청');
   }
 
-  const call = (action, payload = {}) => (DEMO ? demo(action, payload) : remote(action, payload));
+  /* ---------- Supabase ---------- */
+  async function rpc(fn, args) {
+    const headers = { 'Content-Type': 'application/json', apikey: C.SUPABASE_KEY };
+    if (/^eyJ/.test(C.SUPABASE_KEY)) headers.Authorization = 'Bearer ' + C.SUPABASE_KEY; // 예전 anon 키
+    let res;
+    try {
+      res = await fetch(`${C.SUPABASE_URL.replace(/\/+$/, '')}/rest/v1/rpc/${fn}`, { method: 'POST', headers, body: JSON.stringify(args) });
+    } catch (e) { throw new Error('인터넷 연결을 확인해주세요.'); }
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error((data && data.message) || '요청에 실패했어요. 잠시 후 다시 시도해주세요.');
+    return data;
+  }
+  function rowToKo(r) {
+    const o = {
+      '주문번호': r.order_no, '주문일시': r.created_kst, '상태': r.status,
+      '주문자': r.name, '주문자연락처': fmtPhone(r.phone), '받는분': r.recv_name, '받는분연락처': fmtPhone(r.recv_phone),
+      '우편번호': r.zip, '주소': r.address, '상세주소': r.address_detail,
+      '주문내역': r.summary, '총수량(박스)': r.total_qty, '금액': r.amount
+    };
+    PRODUCTS.forEach((p) => { o[p.col] = Number((r.items || {})[p.id]) || 0; });
+    Object.assign(o, { '입금자명': r.depositor, '입금셀프체크': '입금했어요 ✅', '배송메모': r.memo, '택배사': r.carrier, '송장번호': r.tracking_no, '관리자메모': r.admin_memo });
+    return o;
+  }
+  async function supabase(action, p) {
+    switch (action) {
+      case 'stats': return rpc('public_stats', {});
+      case 'createOrder': return rpc('create_order', { p: p.order });
+      case 'lookup': return { ok: true, orders: (await rpc('lookup_orders', { p_name: p.name, p_phone: p.phone })).map((o) => ({ ...o, carrier: o.carrier || C.DEFAULT_CARRIER })) };
+      case 'adminLogin':
+      case 'adminList': return { ok: true, orders: (await rpc('admin_list', { p_password: p.password })).map(rowToKo) };
+      case 'adminUpdate': return rpc('admin_update', { p_password: p.password, p_updates: p.updates });
+    }
+    throw new Error('알 수 없는 요청');
+  }
+
+  const call = (action, payload = {}) => (MODE === 'supabase' ? supabase(action, payload) : MODE === 'gas' ? remote(action, payload) : demo(action, payload));
 
   /* ---------- 택배사 배송조회 링크 ---------- */
   const CARRIERS = {

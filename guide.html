@@ -93,12 +93,12 @@
 
     <div class="card">
       <h2>❓ 자주 묻는 질문</h2>
-      <details><summary>주문 데이터는 어디에 저장돼요?</summary><p>밍밍시 구글 시트의 ‘주문’ 탭에 한 줄씩 쌓여요. 시트에서 직접 고쳐도 관리자 페이지를 새로고침하면 반영돼요. 전체 주문 엑셀에는 상품별 수량까지 모두 들어 있어요.</p></details>
+      <details><summary>주문 데이터는 어디에 저장돼요?</summary><p>밍밍시 Supabase 데이터베이스에 안전하게 쌓여요. 관리자 페이지에서 언제든 엑셀(.xlsx)로 받을 수 있어요. 전체 주문 엑셀에는 상품별 수량까지 모두 들어 있어요.</p></details>
       <details><summary>입금 안 하고 체크만 하면요?</summary><p>“입금했어요”는 손님의 셀프 체크예요. 농장에서 통장을 확인한 뒤 ‘입금확인’으로 바꾼 주문만 송장용 엑셀(기본 설정)에 나와요.</p></details>
-      <details><summary>주문 취소나 주소 변경은요?</summary><p>취소는 관리자 목록에서 상태를 ‘취소’로 바꾸면 집계에서 빠져요. 주소 같은 내용 수정은 구글 시트에서 해당 칸을 직접 고치면 돼요.</p></details>
+      <details><summary>주문 취소나 주소 변경은요?</summary><p>취소는 관리자 목록에서 상태를 ‘취소’로 바꾸면 집계에서 빠져요. 주소 같은 내용 수정은 Supabase의 Table Editor에서 orders 표의 해당 칸을 직접 고치면 돼요.</p></details>
       <details><summary>송장 조회가 안 된다고 해요</summary><p>주문할 때 쓴 <b>주문자</b> 이름과 번호를 그대로 넣어야 해요. 선물로 보낸 경우에도 받는 분이 아니라 주문한 사람 기준이에요. 송장번호가 아직 등록되지 않았으면 ‘발송 준비 중’으로 보여요.</p></details>
       <details><summary>박스가 여러 개면 송장도 여러 개예요?</summary><p>네. 송장용 엑셀이 박스마다 한 줄씩 나오고, 업로드하면 한 주문에 송장번호가 여러 개 저장돼요. 손님 화면에도 모두 보여요.</p></details>
-      <details><summary>품절되면 어떻게 해요?</summary><p>설정 파일(<code>config.js</code>)에서 그 상품에 <code>soldOut: true</code>를 넣으면 손님 화면에 ‘품절’로 표시되고 담을 수 없어요.</p></details>
+      <details><summary>품절되면 어떻게 해요?</summary><p>Supabase Table Editor의 products 표에서 그 상품의 <code>sold_out</code>을 체크하면 손님 화면에 ‘품절’로 표시되고 담을 수 없어요. (<code>config.js</code>에 <code>soldOut: true</code>를 넣어도 돼요.)</p></details>
       <details><summary>배송 중 깨지면요?</summary><p>손님 안내 문구에 “파손이 심하면 사진과 함께 문자 주세요”가 들어 있어요. 문의 번호는 주문 페이지 맨 아래에도 있어요.</p></details>
     </div>
 

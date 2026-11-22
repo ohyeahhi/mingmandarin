@@ -4,8 +4,11 @@
  *  ⚠️ 상품 id / 가격을 바꾸면 apps-script/Code.gs 의 PRODUCTS 도 똑같이 바꿔주세요.
  * ========================================================= */
 window.MM_CONFIG = {
-  // 1) 구글 Apps Script 웹앱 URL (README 3단계에서 복사)
-  //    비워두면 "데모 모드"로 동작해요 (이 브라우저에만 저장).
+  // 1) Supabase 연결 (README 참고) — 둘 다 비워두면 "데모 모드"로 동작해요.
+  SUPABASE_URL: "",   // 예) https://abcdefgh.supabase.co
+  SUPABASE_KEY: "",   // Publishable key (sb_publishable_...) 또는 anon public key
+
+  // (선택) 구글 Apps Script 웹앱 URL — Supabase 대신 구글 시트를 쓸 때만
   API_URL: "",
 
   // 사이트 주소 (공유 문구에 쓰여요)
