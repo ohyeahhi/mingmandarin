@@ -125,7 +125,7 @@
       Pixel.farm(document.getElementById('farm'));
       const url = C.SITE_URL || location.href.replace(/guide\.html.*$/, '').replace(/[#?].*$/, '');
       const lines = C.PRODUCTS.map((p) => `· ${p.name} ${p.weight} ${MM.won(p.price)}${p.desc && p.icon === 'small' ? ` (${p.desc.replace(/^.*· /, '')})` : ''}`).join('\n');
-      const text = `🍊 ${C.TITLE} 🍊\n\n${lines}\n\n✔️ 택배비 포함\n✔️ 강제 착색 · 코팅 · 왁스 없이 당일 수확해서 보내드려요\n\n주문하기 👉 ${url}\n주문 후 같은 링크의 ‘송장 조회’에서 이름 + 번호로 송장번호를 확인할 수 있어요.\n문의 ${C.CONTACT_PHONE}`;
+      const text = `🍊 ${C.TITLE} 🍊\n\n${lines}\n\n✔️ 택배비 무료\n✔️ 강제 착색 · 코팅 · 왁스 없이 당일 수확해서 보내드려요\n\n주문하기 👉 ${url}\n주문 후 같은 링크의 ‘송장 조회’에서 이름 + 번호로 송장번호를 확인할 수 있어요.\n문의 ${C.CONTACT_PHONE}`;
       document.getElementById('share-text').textContent = text;
       const toast = (m) => { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); };
       document.getElementById('copy-share').onclick = async () => {
