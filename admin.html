@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>밍밍시 친구네 귤 주문서 · 관리자</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#F2F4F6">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍊</text></svg>">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/admin.css">
+</head>
+<body class="admin">
+  <header class="topbar">
+    <div class="topbar-inner wide">
+      <a class="brand" href="./"><canvas class="pixel" id="logo"></canvas><span>밍밍시 <small>주문 관리</small></span></a>
+      <div class="top-actions hidden" id="top-actions">
+        <button class="icon-btn" id="refresh" title="새로고침" aria-label="새로고침">↻</button>
+        <button class="icon-btn" id="logout" title="로그아웃" aria-label="로그아웃">⎋</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 로그인 -->
+  <main class="wrap" id="login-view">
+    <div class="card login fade-in">
+      <canvas class="pixel" id="login-mascot"></canvas>
+      <h2 style="justify-content:center">관리자 로그인</h2>
+      <p class="sub" style="text-align:center">귤 주문 현황을 보려면 비밀번호를 입력해주세요.</p>
+      <form id="login-form">
+        <div class="field"><input class="input" type="password" id="pw" placeholder="비밀번호" autocomplete="current-password"></div>
+        <button class="btn" id="login-btn">들어가기</button>
+      </form>
+      <div id="demo-note" class="notice-demo hidden" style="text-align:center"></div>
+    </div>
+  </main>
+
+  <!-- 대시보드 -->
+  <main class="wrap wide hidden" id="dash-view">
+    <section class="dash-hero">
+      <div>
+        <div class="eyebrow">🍊 실시간 주문 현황</div>
+        <h1 id="dash-title">귤 <em>0박스</em> 주문됐어요</h1>
+        <p class="lead" id="dash-sub"></p>
+      </div>
+      <canvas class="pixel" id="dash-farm" aria-hidden="true"></canvas>
+    </section>
+
+    <section class="kpis" id="kpis"></section>
+
+    <section class="grid-2">
+      <div class="card">
+        <h2>날짜별 주문 박스</h2>
+        <p class="sub">최근 14일 · 취소 제외</p>
+        <div id="chart" class="chart"></div>
+      </div>
+      <div class="card">
+        <h2>상품별 주문</h2>
+        <p class="sub">취소 제외 · 박스 수</p>
+        <div id="product-board"></div>
+      </div>
+    </section>
+    <section class="grid-2 rev">
+      <div class="card">
+        <h2>처리 현황</h2>
+        <p class="sub">상태별 주문 건수</p>
+        <div id="status-board"></div>
+      </div>
+      <div class="card how">
+        <h2>🚚 송장 등록 순서</h2>
+        <ol>
+          <li><b>입금 확인</b> — 통장과 비교해서 주문을 <em>입금확인</em>으로 바꿔요 (여러 건 선택 가능)</li>
+          <li><b>송장용 엑셀 다운로드</b> — 박스마다 한 줄, 맨 끝에 빈 <em>송장번호</em> 칸이 있어요</li>
+          <li><b>송장번호 채우기</b> — 택배 접수 후 받은 번호를 그 칸에 붙여넣어요</li>
+          <li><b>그 파일 그대로 업로드</b> — 주문번호에 맞춰 한 번에 등록되고 <em>발송완료</em>가 돼요</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="excel-head">
+        <div>
+          <h2>📥 엑셀</h2>
+          <p class="sub" style="margin:0">송장 출력용 파일을 받고, 송장번호를 한 번에 올릴 수 있어요.</p>
+        </div>
+      </div>
+      <div class="excel-grid">
+        <div class="excel-box">
+          <b>송장용 엑셀</b>
+          <small>주문번호 · 받는분 · 연락처 · 주소 · 품목 · 배송메모 + 빈 <b style="font-size:13px;color:var(--orange)">송장번호</b> 칸</small>
+          <select class="input sm" id="ship-scope">
+            <option value="ready">발송 대기 (입금확인 · 송장 없음)</option>
+            <option value="unshipped">미발송 전체 (주문접수 + 입금확인)</option>
+            <option value="all">취소 제외 전체</option>
+          </select>
+          <label class="mini-check"><input type="checkbox" id="split-box" checked> 박스 수만큼 줄 나누기 (1박스 = 송장 1개)</label>
+          <button class="btn" id="dl-ship">송장용 다운로드</button>
+        </div>
+        <div class="excel-box">
+          <b>전체 주문 엑셀</b>
+          <small>모든 항목 · 주문 확인/정산용</small>
+          <div class="grow"></div>
+          <button class="btn dark" id="dl-all">전체 다운로드</button>
+        </div>
+        <div class="excel-box">
+          <b>송장번호 일괄 등록</b>
+          <small>송장번호 칸을 채운 송장용 엑셀(또는 택배사 엑셀)을 올려주세요. ‘주문번호’와 ‘송장번호’ 열을 찾아 한 번에 입력하고 발송완료로 바꿔요.</small>
+          <div class="grow"></div>
+          <label class="btn ghost" for="upload">파일 선택 (.xlsx / .csv)</label>
+          <input type="file" id="upload" accept=".xlsx,.xls,.csv" class="hidden">
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="list-head">
+        <h2>주문 목록 <span class="count" id="list-count"></span></h2>
+        <input class="input sm search" id="search" placeholder="이름 · 번호 · 주소 · 주문번호 검색">
+      </div>
+      <div class="chips" id="chips"></div>
+      <div class="bulk hidden" id="bulk">
+        <span id="bulk-count"></span>
+        <button class="chip-btn" data-bulk="입금확인">입금확인으로</button>
+        <button class="chip-btn" data-bulk="주문접수">주문접수로</button>
+        <button class="chip-btn" data-bulk="취소">취소</button>
+      </div>
+      <div class="table-wrap">
+        <table class="orders">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="check-all" aria-label="전체 선택"></th>
+              <th>주문</th><th>주문자 / 받는 분</th><th>주소</th><th>주문 상품</th><th class="num">금액</th><th>입금</th><th>상태</th><th>송장</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="empty hidden" id="list-empty">조건에 맞는 주문이 없어요.</div>
+    </section>
+    <div class="footer">구글 시트에서 직접 수정해도 새로고침하면 반영돼요.</div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="config.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/pixel.js"></script>
+  <script src="assets/admin.js"></script>
+</body>
+</html>
