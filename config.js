@@ -8,6 +8,9 @@ window.MM_CONFIG = {
   //    비워두면 "데모 모드"로 동작해요 (이 브라우저에만 저장).
   API_URL: "",
 
+  // 사이트 주소 (공유 문구에 쓰여요)
+  SITE_URL: "https://ohyeahhi.github.io/mingmandarin/",
+
   // 2) 브랜드
   BRAND: "밍밍시",
   TITLE: "밍밍시 친구네 귤 주문서",

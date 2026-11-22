@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>밍밍시 귤 주문서 사용법</title>
+  <meta name="description" content="밍밍시 친구네 귤 주문서 — 손님 주문부터 송장 등록까지 사용 설명서">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍊</text></svg>">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .wrap { padding-bottom: 60px; }
+    .guide h2 { font-size: 21px; }
+    .links { display: grid; gap: 10px; margin-top: 4px; }
+    .link-card { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 18px; background: var(--bg); text-decoration: none; transition: transform .1s; }
+    .link-card:active { transform: scale(.98); }
+    .link-card .ic { flex: none; width: 46px; height: 46px; border-radius: 14px; background: #fff; display: grid; place-items: center; font-size: 22px; }
+    .link-card b { display: block; font-size: 16px; }
+    .link-card small { color: var(--ink-3); font-size: 13px; }
+    .link-card .go { margin-left: auto; color: var(--ink-3); font-size: 20px; }
+    .steps { list-style: none; margin: 6px 0 0; padding: 0; counter-reset: s; }
+    .steps li { counter-increment: s; position: relative; padding: 12px 0 12px 40px; border-bottom: 1px solid var(--line); }
+    .steps li:last-child { border-bottom: 0; }
+    .steps li::before { content: counter(s); position: absolute; left: 0; top: 12px; width: 26px; height: 26px; border-radius: 9px; background: var(--orange); color: #fff; font-weight: 800; font-size: 14px; display: grid; place-items: center; }
+    .steps b { display: block; font-size: 16px; }
+    .steps span { color: var(--ink-2); font-size: 14px; }
+    .steps em { font-style: normal; font-weight: 700; color: var(--orange); }
+    .cols { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .cols span { font-size: 13px; font-weight: 600; background: var(--bg); padding: 5px 9px; border-radius: 8px; color: var(--ink-2); }
+    .cols span.hl { background: var(--orange-50); color: var(--orange); }
+    details { border-bottom: 1px solid var(--line); }
+    details:last-child { border-bottom: 0; }
+    summary { list-style: none; cursor: pointer; padding: 14px 0; font-weight: 700; display: flex; justify-content: space-between; gap: 10px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; color: var(--ink-3); font-weight: 600; font-size: 20px; line-height: 1; }
+    details[open] summary::after { content: '−'; }
+    details p { margin: 0 0 14px; color: var(--ink-2); font-size: 15px; }
+    .share { background: var(--bg); border-radius: 16px; padding: 16px; white-space: pre-wrap; font-size: 15px; color: var(--ink-2); line-height: 1.6; }
+    code { background: var(--bg); padding: 2px 6px; border-radius: 6px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="./"><canvas class="pixel" id="logo"></canvas><span>밍밍시 <small>사용법</small></span></a>
+    </div>
+  </header>
+
+  <main class="wrap guide">
+    <div class="hero fade-in">
+      <canvas class="pixel" id="farm" aria-label="농부가 귤을 따고, 일꾼이 상자로 옮기고, 트럭이 싣고 가는 픽셀 그림"></canvas>
+      <div class="hero-copy">
+        <span class="eyebrow">📖 사용 설명서</span>
+        <h1>밍밍시 친구네<br><em>귤 주문서</em> 사용법</h1>
+        <p class="lead">손님은 링크 하나로 주문하고, 농장은 엑셀로 송장을 만들어요. 손님은 이름과 번호만 넣으면 송장번호를 확인할 수 있어요.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>페이지는 세 가지예요</h2>
+      <p class="sub">모두 같은 주소 안에 있어요.</p>
+      <div class="links">
+        <a class="link-card" href="index.html"><span class="ic">🍊</span><span><b>주문하기</b><small>손님이 상품을 고르고 주문해요</small></span><span class="go">›</span></a>
+        <a class="link-card" href="index.html#lookup"><span class="ic">📦</span><span><b>송장 조회</b><small>이름 + 휴대폰 번호로 송장번호 확인</small></span><span class="go">›</span></a>
+        <a class="link-card" href="admin.html"><span class="ic">📊</span><span><b>관리자</b><small>주문 현황 · 엑셀 · 송장 등록 (비밀번호)</small></span><span class="go">›</span></a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🙋 손님은 이렇게 주문해요</h2>
+      <ol class="steps">
+        <li><b>상품과 수량 고르기</b><span>노지감귤 10kg, 꼬마·가정용·선물용 황금향 5kg 중 원하는 만큼 + 버튼으로 담아요. 여러 상품을 함께 담을 수 있어요.</span></li>
+        <li><b>받으실 분 정보 쓰기</b><span>이름, 휴대폰 번호, 주소(주소 검색 버튼). 선물이면 <em>선물하기</em>를 켜고 받는 분 정보를 따로 써요.</span></li>
+        <li><b>계좌로 입금하고 체크</b><span>화면에 나온 계좌로 금액을 보내고 <em>“입금했어요”</em>를 체크해요. 입금자 이름이 다르면 적어줘요.</span></li>
+        <li><b>주문 완료</b><span>주문번호가 나와요. 발송되면 <em>송장 조회</em> 탭에서 이름 + 번호로 송장번호와 배송조회 버튼을 볼 수 있어요.</span></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>🧑‍🌾 농장은 이렇게 처리해요</h2>
+      <p class="sub">관리자 페이지에서 비밀번호로 들어가요.</p>
+      <ol class="steps">
+        <li><b>대시보드 확인</b><span>총 주문 금액, 입금 확인할 주문, 발송 대기, 상품별 박스 수, 날짜별 주문이 한눈에 보여요.</span></li>
+        <li><b>입금 확인</b><span>통장 입금 내역과 비교해서 주문 상태를 <em>입금확인</em>으로 바꿔요. 여러 건을 체크해서 한 번에 바꿀 수 있어요.</span></li>
+        <li><b>송장용 엑셀 다운로드</b><span>박스 하나에 한 줄씩 나와요. 맨 끝에 빈 <em>송장번호</em> 칸이 있어요.</span></li>
+        <li><b>송장번호 채워서 업로드</b><span>택배 접수 후 받은 번호를 그 칸에 붙여넣고, 그 파일을 그대로 <em>송장번호 일괄 등록</em>에 올려요. 주문번호에 맞춰 한 번에 입력되고 <em>발송완료</em>로 바뀌어요.</span></li>
+        <li><b>끝!</b><span>손님이 송장 조회에서 바로 확인할 수 있어요. 한 건씩 할 때는 목록에서 송장번호를 입력하고 저장해도 돼요.</span></li>
+      </ol>
+      <p class="sub" style="margin:14px 0 0">송장용 엑셀 열</p>
+      <div class="cols">
+        <span>주문번호</span><span>받는분성명</span><span>받는분전화번호</span><span>우편번호</span><span>받는분주소</span><span>품목명</span><span>박스수량</span><span>박스순번</span><span>배송메세지</span><span>보내는분성명</span><span>주문자</span><span>주문자연락처</span><span>택배사</span><span class="hl">송장번호 ← 여기만 채우기</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>❓ 자주 묻는 질문</h2>
+      <details><summary>주문 데이터는 어디에 저장돼요?</summary><p>밍밍시 구글 시트의 ‘주문’ 탭에 한 줄씩 쌓여요. 시트에서 직접 고쳐도 관리자 페이지를 새로고침하면 반영돼요. 전체 주문 엑셀에는 상품별 수량까지 모두 들어 있어요.</p></details>
+      <details><summary>입금 안 하고 체크만 하면요?</summary><p>“입금했어요”는 손님의 셀프 체크예요. 농장에서 통장을 확인한 뒤 ‘입금확인’으로 바꾼 주문만 송장용 엑셀(기본 설정)에 나와요.</p></details>
+      <details><summary>주문 취소나 주소 변경은요?</summary><p>취소는 관리자 목록에서 상태를 ‘취소’로 바꾸면 집계에서 빠져요. 주소 같은 내용 수정은 구글 시트에서 해당 칸을 직접 고치면 돼요.</p></details>
+      <details><summary>송장 조회가 안 된다고 해요</summary><p>주문할 때 쓴 <b>주문자</b> 이름과 번호를 그대로 넣어야 해요. 선물로 보낸 경우에도 받는 분이 아니라 주문한 사람 기준이에요. 송장번호가 아직 등록되지 않았으면 ‘발송 준비 중’으로 보여요.</p></details>
+      <details><summary>박스가 여러 개면 송장도 여러 개예요?</summary><p>네. 송장용 엑셀이 박스마다 한 줄씩 나오고, 업로드하면 한 주문에 송장번호가 여러 개 저장돼요. 손님 화면에도 모두 보여요.</p></details>
+      <details><summary>품절되면 어떻게 해요?</summary><p>설정 파일(<code>config.js</code>)에서 그 상품에 <code>soldOut: true</code>를 넣으면 손님 화면에 ‘품절’로 표시되고 담을 수 없어요.</p></details>
+      <details><summary>배송 중 깨지면요?</summary><p>손님 안내 문구에 “파손이 심하면 사진과 함께 문자 주세요”가 들어 있어요. 문의 번호는 주문 페이지 맨 아래에도 있어요.</p></details>
+    </div>
+
+    <div class="card">
+      <h2>📣 인스타/카톡에 올릴 문구</h2>
+      <p class="sub">복사해서 그대로 쓰세요.</p>
+      <div class="share" id="share-text"></div>
+      <button class="btn" style="margin-top:12px" id="copy-share">문구 복사하기</button>
+    </div>
+
+    <div class="footer">밍밍시 · <a href="index.html">주문하러 가기</a></div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="config.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/pixel.js"></script>
+  <script>
+    (function () {
+      const C = window.MM_CONFIG;
+      Pixel.mascot(document.getElementById('logo'));
+      Pixel.farm(document.getElementById('farm'));
+      const url = C.SITE_URL || location.href.replace(/guide\.html.*$/, '').replace(/[#?].*$/, '');
+      const lines = C.PRODUCTS.map((p) => `· ${p.name} ${p.weight} ${MM.won(p.price)}${p.desc && p.icon === 'small' ? ` (${p.desc.replace(/^.*· /, '')})` : ''}`).join('\n');
+      const text = `🍊 ${C.TITLE} 🍊\n\n${lines}\n\n✔️ 택배비 포함\n✔️ 강제 착색 · 코팅 · 왁스 없이 당일 수확해서 보내드려요\n\n주문하기 👉 ${url}\n주문 후 같은 링크의 ‘송장 조회’에서 이름 + 번호로 송장번호를 확인할 수 있어요.\n문의 ${C.CONTACT_PHONE}`;
+      document.getElementById('share-text').textContent = text;
+      const toast = (m) => { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); };
+      document.getElementById('copy-share').onclick = async () => {
+        try { await navigator.clipboard.writeText(text); toast('문구를 복사했어요'); }
+        catch (e) { const r = document.createRange(); r.selectNodeContents(document.getElementById('share-text')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('문구를 선택했어요. 복사해서 쓰세요'); }
+      };
+    })();
+  </script>
+</body>
+</html>

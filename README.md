@@ -7,6 +7,7 @@
 | 주문자 | `index.html` | 상품·수량 선택 → 이름/번호/주소 → 계좌 안내 + 입금 셀프체크 → 주문 완료 |
 | 송장 조회 | `index.html#lookup` | 이름 + 휴대폰 번호 → 주문 상태 · 송장번호 · 배송조회 링크 |
 | 관리자 | `admin.html` | 비밀번호 로그인 → 대시보드 · 상태 변경 · 송장 입력 · 엑셀 다운로드/업로드 |
+| 사용법 | `guide.html` | 손님/농장용 사용 설명서 + 인스타·카톡 공유 문구 |
 
 주문 데이터는 **내 구글 시트**에 쌓여요. 서버비 0원이고, 시트를 직접 열어 고쳐도 돼요.
 
@@ -38,8 +39,7 @@ API_URL: "https://script.google.com/macros/s/....../exec",  // 방금 복사한 
 ### 3. 인터넷에 올리기
 아래 중 편한 방법 하나.
 
-- **GitHub Pages**: 저장소 Settings → Pages → Branch 선택 → Save. (`https://아이디.github.io/mingmandarin/`)
-  (비공개 저장소는 유료 플랜이 필요해요.)
+- **GitHub Pages**: 저장소 **Settings → Pages → Build and deployment → Source: Deploy from a branch** → 브랜치 선택, 폴더 `/ (root)` → **Save**. 1~2분 뒤 `https://ohyeahhi.github.io/mingmandarin/` 에서 열려요.
 - **Netlify Drop**: [app.netlify.com/drop](https://app.netlify.com/drop)에 이 폴더를 끌어다 놓으면 바로 주소가 생겨요.
 
 인스타 프로필 링크에 주문 주소를 걸면 끝! 특정 상품을 담은 채로 열고 싶으면 `?item=gift5`처럼 붙여요.
