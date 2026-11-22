@@ -89,7 +89,7 @@ table.orders { width: 100%; border-collapse: collapse; font-size: 14px; min-widt
 .orders .status-sel.s-입금확인 { color: var(--blue); }
 .orders .status-sel.s-발송완료 { color: var(--green); }
 .orders .status-sel.s-취소 { color: var(--ink-3); }
-.orders tr.cancel td:not(:last-child):not(:nth-last-child(2)) { opacity: .45; }
+.orders tr.cancel td:not(:nth-child(8)) { opacity: .45; }
 .save-btn { height: 32px; border: 0; border-radius: 10px; background: var(--orange); color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; }
 .save-btn[disabled] { background: var(--line); color: var(--ink-3); cursor: default; }
 
@@ -151,3 +151,28 @@ table.orders { width: 100%; border-collapse: collapse; font-size: 14px; min-widt
   .orders td:nth-child(5)::before, .orders td:nth-child(5)::after { content: none; }
 }
 @media (max-width: 900px) { .grid-2.rev { grid-template-columns: 1fr; } }
+
+/* 상태 칸: 취소 버튼 / 메모 */
+.st-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.link-btn { border: 0; background: none; padding: 0; white-space: nowrap; font-size: 13px; font-weight: 700; color: var(--ink-3); cursor: pointer; }
+.link-btn:hover { color: var(--ink); text-decoration: underline; }
+.link-btn.danger { color: var(--red); }
+.st-cell .memo { font-size: 12px; color: var(--ink-3); max-width: 160px; line-height: 1.4; }
+.chip-btn.danger { color: var(--red); }
+.orders .status-sel.s-미입금 { color: var(--red); }
+.orders tr.cancel td:nth-child(8) { opacity: 1; }
+
+/* 취소 창 */
+.modal { position: fixed; inset: 0; z-index: 150; background: rgba(25,31,40,.45); display: flex; align-items: flex-end; justify-content: center; padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+@media (min-width: 600px) { .modal { align-items: center; } }
+.modal-card { width: 100%; max-width: 420px; background: #fff; border-radius: 24px; padding: 24px; animation: fadeUp .25s cubic-bezier(.2,.7,.3,1); }
+.modal-card h2 { margin: 0 0 4px; font-size: 20px; }
+.reasons { display: grid; gap: 8px; margin-top: 14px; }
+.reasons label { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: var(--bg); font-weight: 600; cursor: pointer; flex-wrap: wrap; }
+.reasons label:has(input[type=radio]:checked) { background: var(--red-50); color: var(--red); }
+.reasons input[type=radio] { accent-color: var(--red); width: 18px; height: 18px; margin: 0; }
+.reasons .input.sm { flex: 1 1 140px; height: 38px; color: var(--ink); }
+.modal-actions { display: grid; grid-template-columns: 1fr 1.4fr; gap: 8px; margin-top: 18px; }
+.modal-actions .btn { height: 52px; font-size: 16px; }
+.btn.danger { background: var(--red); box-shadow: none; }
+.btn.danger:active { background: #D93644; }

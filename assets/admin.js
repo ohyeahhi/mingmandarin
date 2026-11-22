@@ -3,9 +3,10 @@
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const PW_KEY = 'mm_admin_pw';
-  const STATUSES = ['주문접수', '입금확인', '발송완료', '취소'];
+  const STATUSES = ['주문접수', '미입금', '입금확인', '발송완료', '취소'];
   const STATUS_META = {
     '주문접수': { ic: '📝', bg: 'var(--orange-50)', color: 'var(--orange)', desc: '입금 확인이 필요해요' },
+    '미입금': { ic: '⚠️', bg: 'var(--red-50)', color: 'var(--red)', desc: '통장에 입금이 안 됐어요' },
     '입금확인': { ic: '💰', bg: 'var(--blue-50)', color: 'var(--blue)', desc: '포장 · 송장 입력 대기' },
     '발송완료': { ic: '🚚', bg: 'var(--green-50)', color: 'var(--green)', desc: '송장번호 등록 완료' },
     '취소': { ic: '✕', bg: '#F2F4F6', color: '#B0B8C1', desc: '집계에서 제외돼요' }
@@ -79,12 +80,14 @@
     const tkey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     const todayBoxes = sum(L.filter((o) => String(o['주문일시']).startsWith(tkey)), '총수량(박스)');
     const pendingPay = orders.filter((o) => o['상태'] === '주문접수');
+    const unpaid = orders.filter((o) => o['상태'] === '미입금');
+    const paid = orders.filter((o) => o['상태'] === '입금확인' || o['상태'] === '발송완료');
     const toShip = orders.filter((o) => o['상태'] === '입금확인');
     $('#dash-title').innerHTML = `귤 <em>${boxes.toLocaleString()}박스</em> 주문됐어요`;
     $('#dash-sub').textContent = `${L.length}건 · 오늘 ${todayBoxes}박스 · ${MM.won(sum(L, '금액'))}`;
     const k = [
-      { label: '총 주문 금액', val: MM.won(sum(L, '금액')), sub: `${L.length}건 · ${boxes}박스`, accent: true },
-      { label: '입금 확인 필요', val: `${pendingPay.length}건`, sub: `${sum(pendingPay, '총수량(박스)')}박스 · ${MM.won(sum(pendingPay, '금액'))}` },
+      { label: '총 주문 금액', val: MM.won(sum(L, '금액')), sub: `${L.length}건 · ${boxes}박스 · 입금완료 ${MM.won(sum(paid, '금액'))}`, accent: true },
+      { label: '입금 확인 필요', val: `${pendingPay.length}건`, sub: `${MM.won(sum(pendingPay, '금액'))}${unpaid.length ? ` · ⚠️ 미입금 ${unpaid.length}건` : ''}` },
       { label: '발송 대기', val: `${toShip.length}건`, sub: `${sum(toShip, '총수량(박스)')}박스 포장 필요` },
       { label: '발송 완료', val: `${orders.filter((o) => o['상태'] === '발송완료').length}건`, sub: `${sum(orders.filter((o) => o['상태'] === '발송완료'), '총수량(박스)')}박스` }
     ];
@@ -201,7 +204,13 @@
         <td class="items">${esc(o['주문내역'] || '').split(', ').map((x) => `<div>${x}</div>`).join('')}<div class="muted">총 ${o['총수량(박스)']}박스</div></td>
         <td class="num">${MM.won(o['금액'])}</td>
         <td><div>${esc(o['입금자명'])}</div><div class="muted">셀프체크 ✅</div></td>
-        <td><select class="status-sel s-${esc(o['상태'])}" data-field="status">${STATUSES.map((s) => `<option ${s === o['상태'] ? 'selected' : ''}>${s}</option>`).join('')}</select></td>
+        <td><div class="st-cell">
+          <select class="status-sel s-${esc(o['상태'])}" data-field="status" aria-label="상태">${STATUSES.map((s) => `<option ${s === o['상태'] ? 'selected' : ''}>${s}</option>`).join('')}</select>
+          ${o['상태'] === '취소'
+            ? `<button class="link-btn" data-act="restore">↩︎ 취소 되돌리기</button>`
+            : `<button class="link-btn danger" data-act="cancel">주문 취소</button>`}
+          ${o['관리자메모'] ? `<div class="memo">${esc(o['관리자메모'])}</div>` : ''}
+        </div></td>
         <td><div class="trk-cell">
           <select data-field="carrier">${carrierOpts}</select>
           <input class="trk" data-field="trackingNo" placeholder="송장번호" value="${esc(o['송장번호'])}" inputmode="numeric">
@@ -224,6 +233,7 @@
       const dirty = () => { save.disabled = status.value === o['상태'] && carrier.value === (o['택배사'] || C.DEFAULT_CARRIER) && trk.value.trim() === o['송장번호']; };
       // 상태 변경은 바로 저장
       status.addEventListener('change', async () => {
+        if (status.value === '취소') { status.value = o['상태']; openCancel([no]); return; }
         status.className = `status-sel s-${status.value}`;
         await update([{ orderNo: no, status: status.value }], `${o['주문자']}님 주문 → ${status.value}`);
       });
@@ -236,6 +246,11 @@
         save.disabled = true; save.textContent = '…';
         await update([u], u.status ? '송장 저장 · 발송완료로 바꿨어요' : '송장을 저장했어요');
         save.textContent = '저장';
+      };
+      const act = tr.querySelector('[data-act]');
+      if (act) act.onclick = () => {
+        if (act.dataset.act === 'cancel') openCancel([no]);
+        else update([{ orderNo: no, status: '주문접수', adminMemo: addMemo(o['관리자메모'], '취소 되돌림') }], `${o['주문자']}님 주문을 되돌렸어요 (주문접수)`);
       };
       tr.querySelector('.row-check').addEventListener('change', (e) => {
         if (e.target.checked) selected.add(no); else selected.delete(no);
@@ -253,6 +268,7 @@
         if (u.status !== undefined) o['상태'] = u.status;
         if (u.carrier !== undefined) o['택배사'] = u.carrier;
         if (u.trackingNo !== undefined) o['송장번호'] = u.trackingNo;
+        if (u.adminMemo !== undefined) o['관리자메모'] = u.adminMemo;
       });
       render();
       toast(msg + (r.missing && r.missing.length ? ` (못 찾은 주문 ${r.missing.length}건)` : ''));
@@ -274,11 +290,41 @@
   }
   document.querySelectorAll('[data-bulk]').forEach((b) => b.onclick = async () => {
     const s = b.dataset.bulk;
-    if (s === '취소' && !confirm(`${selected.size}건을 취소할까요?`)) return;
+    if (s === '취소') { openCancel([...selected]); return; }
     const ups = [...selected].map((orderNo) => ({ orderNo, status: s }));
     await update(ups, `${ups.length}건 → ${s}`);
     selected.clear(); renderRows();
   });
+
+  /* ---------- 주문 취소 (사유 기록) ---------- */
+  const today = () => { const d = new Date(); return `${d.getMonth() + 1}/${d.getDate()}`; };
+  const addMemo = (prev, text) => [`[${today()}] ${text}`, prev].filter(Boolean).join(' / ').slice(0, 200);
+  let cancelTargets = [];
+  function openCancel(nos) {
+    cancelTargets = nos.filter((n) => { const o = orders.find((x) => x['주문번호'] === n); return o && o['상태'] !== '취소'; });
+    if (!cancelTargets.length) return toast('이미 취소된 주문이에요');
+    const list = cancelTargets.map((n) => orders.find((x) => x['주문번호'] === n));
+    $('#cancel-desc').innerHTML = list.length === 1
+      ? `<b>${esc(list[0]['주문자'])}</b>님 · ${esc(list[0]['주문내역'])} · ${MM.won(list[0]['금액'])}`
+      : `<b>${list.length}건</b> · ${MM.won(sum(list, '금액'))}`;
+    document.querySelectorAll('#cancel-modal [name=reason]').forEach((r, i) => { r.checked = i === 0; });
+    $('#cancel-etc').value = '';
+    $('#cancel-modal').classList.remove('hidden');
+  }
+  const closeCancel = () => $('#cancel-modal').classList.add('hidden');
+  $('#cancel-close').onclick = closeCancel;
+  $('#cancel-modal').addEventListener('click', (e) => { if (e.target.id === 'cancel-modal') closeCancel(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeCancel(); });
+  $('#cancel-etc').addEventListener('focus', () => { document.querySelector('#cancel-modal [value=기타]').checked = true; });
+  $('#cancel-ok').onclick = async () => {
+    const r = document.querySelector('#cancel-modal [name=reason]:checked').value;
+    const reason = r === '기타' ? ($('#cancel-etc').value.trim() || '기타') : r;
+    const ups = cancelTargets.map((n) => ({ orderNo: n, status: '취소', adminMemo: addMemo(orders.find((x) => x['주문번호'] === n)['관리자메모'], `취소: ${reason}`) }));
+    const btn = $('#cancel-ok'); btn.disabled = true;
+    await update(ups, `${ups.length}건을 취소했어요 (${reason})`);
+    btn.disabled = false; closeCancel();
+    ups.forEach((u) => selected.delete(u.orderNo)); renderRows();
+  };
 
   /* ---------- 엑셀 ---------- */
   const stamp = () => { const d = new Date(); return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}_${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}`; };

@@ -261,7 +261,7 @@
   });
 
   function orderCard(o) {
-    const idx = o.status === '취소' ? -1 : STEPS.indexOf(o.status);
+    const idx = o.status === '취소' ? -1 : o.status === '미입금' ? 0 : STEPS.indexOf(o.status);
     const tl = STEPS.map((s, i) => `${i ? `<span class="bar ${i <= idx ? 'on' : ''}"></span>` : ''}<span class="dot ${i <= idx ? 'on' : ''}"></span>`).join('');
     const labels = ['주문접수', '입금확인', '발송완료'].map((s, i) => `<span class="${i <= idx ? 'on' : ''}">${s}</span>`).join('');
     const nos = String(o.trackingNo || '').split(/[,\s/]+/).filter(Boolean);
@@ -272,7 +272,9 @@
            <div class="t-actions"><button class="chip-btn" data-copy="${esc(no)}">복사</button>
            ${url ? `<a class="chip-btn" style="background:var(--orange);color:#fff" href="${url}" target="_blank" rel="noopener">배송조회</a>` : ''}</div></div>`;
         }).join('')
-      : `<div class="tracking"><div class="grow"><div class="t-carrier">송장번호</div><div style="font-weight:700;color:var(--ink-2)">${o.status === '취소' ? '취소된 주문이에요' : '발송 준비 중이에요 🍊'}</div></div></div>`;
+      : o.status === '미입금'
+        ? `<div class="tracking unpaid"><div class="grow"><div class="t-carrier">입금이 아직 확인되지 않았어요</div><div style="font-weight:700">${esc(C.BANK.name)} ${esc(C.BANK.number)} (${esc(C.BANK.holder)})</div><div class="t-carrier" style="margin-top:2px">${MM.won(o.amount)}을 입금한 뒤 ${esc(C.CONTACT_PHONE)}로 문자 주세요</div></div></div>`
+        : `<div class="tracking"><div class="grow"><div class="t-carrier">송장번호</div><div style="font-weight:700;color:var(--ink-2)">${o.status === '취소' ? '취소된 주문이에요' : '발송 준비 중이에요 🍊'}</div></div></div>`;
     return `<div class="order-card">
       <div class="top"><span class="no">${esc(o.orderNo)} · ${esc(String(o.createdAt).slice(0, 10))}</span><span class="pill s-${esc(o.status)}">${esc(o.status)}</span></div>
       <div class="what">${esc(o.summary || `${o.qty}박스`).split(', ').join('<br>')}<div style="color:var(--ink-3);font-weight:600;font-size:14px;margin-top:2px">${MM.won(o.amount)} · 받는 분 ${esc(o.recvName)}</div></div>

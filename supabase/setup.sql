@@ -180,7 +180,7 @@ declare u jsonb; n int := 0; missing jsonb := '[]'::jsonb;
 begin
   perform mm_check_admin(p_password);
   for u in select * from jsonb_array_elements(coalesce(p_updates, '[]'::jsonb)) loop
-    if u ? 'status' and (u->>'status') not in ('주문접수', '입금확인', '발송완료', '취소') then
+    if u ? 'status' and (u->>'status') not in ('주문접수', '미입금', '입금확인', '발송완료', '취소') then
       raise exception '잘못된 상태값: %', u->>'status';
     end if;
     update orders set

@@ -23,7 +23,7 @@ var MAX_QTY_PER_ITEM = 20;
 var DEFAULT_CARRIER = 'CJ대한통운';
 
 var SHEET_NAME = '주문';
-var STATUSES = ['주문접수', '입금확인', '발송완료', '취소'];
+var STATUSES = ['주문접수', '미입금', '입금확인', '발송완료', '취소'];
 
 function headers_() {
   return ['주문번호', '주문일시', '상태', '주문자', '주문자연락처', '받는분', '받는분연락처',

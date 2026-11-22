@@ -194,6 +194,7 @@ textarea.input { height: 84px; padding: 14px 16px; resize: none; }
 
 .pill { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
 .pill.s-주문접수 { background: var(--orange-50); color: var(--orange); }
+.pill.s-미입금 { background: var(--red-50); color: var(--red); }
 .pill.s-입금확인 { background: var(--blue-50); color: var(--blue); }
 .pill.s-발송완료 { background: var(--green-50); color: var(--green); }
 .pill.s-취소 { background: #F2F4F6; color: var(--ink-3); }
@@ -258,3 +259,5 @@ textarea.input { height: 84px; padding: 14px 16px; resize: none; }
 .notices { margin: 8px 0 0; padding: 0; list-style: none; }
 .notices li { position: relative; padding: 7px 0 7px 26px; color: var(--ink-2); font-size: 15px; line-height: 1.55; }
 .notices li::before { content: '✓'; position: absolute; left: 0; top: 7px; width: 18px; height: 18px; border-radius: 6px; background: var(--orange-50); color: var(--orange); font-size: 12px; font-weight: 800; display: grid; place-items: center; }
+.tracking.unpaid { background: var(--red-50); }
+.tracking.unpaid .t-carrier { color: var(--red); }
