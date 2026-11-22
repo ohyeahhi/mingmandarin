@@ -5,8 +5,8 @@
  * ========================================================= */
 window.MM_CONFIG = {
   // 1) Supabase 연결 (README 참고) — 둘 다 비워두면 "데모 모드"로 동작해요.
-  SUPABASE_URL: "",   // 예) https://abcdefgh.supabase.co
-  SUPABASE_KEY: "",   // Publishable key (sb_publishable_...) 또는 anon public key
+  SUPABASE_URL: "https://hpmrndoynnxaikluekck.supabase.co",   // 예) https://abcdefgh.supabase.co
+  SUPABASE_KEY: "sb_publishable_Jfh6GGqph8vH-LtoMt3flw_x6T8BpWr",   // Publishable key (sb_publishable_...) 또는 anon public key
 
   // (선택) 구글 Apps Script 웹앱 URL — Supabase 대신 구글 시트를 쓸 때만
   API_URL: "",
